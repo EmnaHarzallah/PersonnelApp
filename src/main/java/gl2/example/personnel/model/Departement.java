@@ -9,7 +9,11 @@ public class Departement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String name = "";
+
+    @OneToMany(mappedBy = "departement")
+    private List<Employee> employees;
 
     public Departement() {}
 
@@ -35,6 +39,13 @@ public class Departement {
         this.name = name;
     }
 
+    public List<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(List<Employee> employees) {
+        this.employees = employees;
+    }
 
     @Override
     public String toString() {
