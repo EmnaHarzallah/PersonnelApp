@@ -2,16 +2,22 @@ package gl2.example.personnel.controller;
 
 
 
+import gl2.example.personnel.model.Departement;
 import gl2.example.personnel.model.Employee;
+import gl2.example.personnel.repository.DepartementRepository;
 import gl2.example.personnel.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.util.ReflectionUtils;
+
+
+
 import java.util.Map;
 import java.lang.reflect.Field;
 
@@ -22,6 +28,8 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
+    @Autowired
+    private DepartementRepository departementRepository;
 
     @GetMapping
     public List<Employee> getAllEmployees() {
@@ -38,11 +46,32 @@ public class EmployeeController {
         }
     }
 
-    @PostMapping
-    public Employee addEmployee(@RequestBody Employee employee) {
 
-        return employeeService.addEmployee(employee);
+    @PostMapping
+    public ResponseEntity<?> addEmployee(@RequestBody EmployeeDTO dto) {
+        Optional<Departement> deptOpt = departementRepository.findById(dto.getDepartmentId());
+
+        if (deptOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Département avec l'ID " + dto.getDepartmentId() + " introuvable.");
+        }
+
+        Departement departement = deptOpt.get();
+
+        Employee emp = new Employee();
+        emp.setName(dto.getName());
+        emp.setPosition(dto.getPosition());
+        emp.setDepartement(departement);
+
+        //  Ajout bidirectionnel
+        departement.getEmployees().add(emp);
+        departementRepository.save(departement); // Save the department with the newly added employee
+
+
+        Employee saved = employeeService.saveEmployee(emp);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
+
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
@@ -104,3 +133,4 @@ public class EmployeeController {
 
 
 }
+

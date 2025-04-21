@@ -14,15 +14,17 @@ public class Employee {
     private double salary;
 
     @ManyToOne
-    @JoinColumn(name = "departement_id", nullable = false)
+    @JoinColumn(name = "department_id")  // Change to department_id to match the department's id column
     private Departement departement;
-
 
     public Employee(String name, String position, double salary, Departement departement) {
         this.name = name;
         this.position = position;
         this.salary = salary;
         this.departement = departement;
+    }
+
+    public Employee() {
     }
 
     // Getters and Setters
@@ -70,6 +72,6 @@ public class Employee {
     public String toString() {
         return "Employee [id=" + id + ", name=" + name + ", position=" + position +
                 ", salary=" + salary + ", departement=" +
-                (departement != null ? departement.getName() : "null") + "]";
+                (departement != null ? departement.toString() : "null") + "]";
     }
 }

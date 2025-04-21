@@ -1,6 +1,5 @@
 package gl2.example.personnel.service;
 
-
 import gl2.example.personnel.model.Employee;
 import gl2.example.personnel.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,25 +19,34 @@ public class EmployeeService {
         return employeeRepository.findAll();
     }
 
-    public Optional<Employee> getEmployeeById(Long id) {
-        return employeeRepository.findById(id);
+    public Employee getEmployeeById(Long id) {
+        return employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee with ID " + id + " not found."));
     }
 
     public Employee addEmployee(Employee employee) {
         try {
             return employeeRepository.save(employee);
         } catch (DataIntegrityViolationException e) {
-            throw new RuntimeException("Erreur de contrainte de base de données", e);
+            throw new RuntimeException("Database constraint error: " + e.getMessage(), e);
         } catch (Exception e) {
-            throw new RuntimeException("Erreur interne serveur lors de l'ajout de l'employé", e);
+            throw new RuntimeException("Internal server error while adding the employee", e);
         }
     }
 
     public void deleteEmployee(Long id) {
+        if (!employeeRepository.existsById(id)) {
+            throw new RuntimeException("Employee with ID " + id + " not found.");
+        }
         employeeRepository.deleteById(id);
     }
-    public Employee updateEmployee(Employee employee) {
 
+    public Employee updateEmployee(Employee employee) {
+        // Check if the employee exists before saving
+        Optional<Employee> existingEmployee = employeeRepository.findById(employee.getId());
+        if (existingEmployee.isEmpty()) {
+            throw new RuntimeException("Employee with ID " + employee.getId() + " not found.");
+        }
         return employeeRepository.save(employee);
     }
 }

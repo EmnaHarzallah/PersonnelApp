@@ -1,9 +1,6 @@
 package gl2.example.personnel.service;
 
 import gl2.example.personnel.model.Departement;
-import gl2.example.personnel.model.Employee;
-import gl2.example.personnel.repository.DepartementRepository;
-import gl2.example.personnel.model.Departement;
 import gl2.example.personnel.repository.DepartementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +18,9 @@ public class DepartementService {
         return departementRepository.findAll();
     }
 
-    public Optional<Departement> getDepartementById(int id) {
-        return departementRepository.findById(id);
+    public Departement getDepartementById(int id) {
+        return departementRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Departement with ID " + id + " not found."));
     }
 
     public Departement addDepartement(Departement departement) {
@@ -30,7 +28,11 @@ public class DepartementService {
     }
 
     public void deleteDepartement(int id) {
-        departementRepository.deleteById(id);
+        if (departementRepository.existsById(id)) {
+            departementRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Departement with ID " + id + " not found.");
+        }
     }
 
     public Departement updateDepartement(Departement departement) {

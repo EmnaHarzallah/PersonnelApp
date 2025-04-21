@@ -23,8 +23,10 @@ public class DepartementController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Departement> getDepartementById(@PathVariable int id) {
-        return departementService.getDepartementById(id);
+    public ResponseEntity<Departement> getDepartementById(@PathVariable int id) {
+        Optional<Departement> departement = departementService.getDepartementById(id);
+        return departement.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -42,10 +44,12 @@ public class DepartementController {
     public void deleteDepartement(@PathVariable int id) {
         departementService.deleteDepartement(id);
     }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
         // Log de l'exception
         e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur interne s'est produite : " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Une erreur interne s'est produite : " + e.getMessage());
     }
 }

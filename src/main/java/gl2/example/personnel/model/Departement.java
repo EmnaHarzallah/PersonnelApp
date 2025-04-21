@@ -12,11 +12,10 @@ public class Departement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private String name ;
+    private String name;
 
-    @OneToMany(mappedBy = "departement")
+    @OneToMany(mappedBy = "departement", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Employee> employees;
-
 
     public Departement(int id, String name) {
         this.id = id;
@@ -25,11 +24,10 @@ public class Departement {
     }
 
     public Departement() {
-        this.employees = new ArrayList<>();
         this.id = 0;
         this.name = "";
+        this.employees = new ArrayList<>();
     }
-
 
     // Getters et Setters
     public int getId() {
@@ -59,5 +57,10 @@ public class Departement {
     @Override
     public String toString() {
         return "Departement [id=" + id + ", name=" + name + "]";
+    }
+
+    public void addEmployee(Employee e) {
+        employees.add(e);
+        e.setDepartement(this); // Ensures bidirectional relationship integrity
     }
 }
