@@ -1,6 +1,8 @@
 package gl2.example.personnel.model;
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,7 +21,9 @@ public class Departement {
     public Departement(int id, String name) {
         this.id = id;
         this.name = name;
+        this.employees = new ArrayList<>();
     }
+
 
     // Getters et Setters
     public int getId() {
