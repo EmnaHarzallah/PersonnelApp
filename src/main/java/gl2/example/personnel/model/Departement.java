@@ -15,7 +15,6 @@ public class Departement {
     @OneToMany(mappedBy = "departement")
     private List<Employee> employees;
 
-    public Departement() {}
 
     public Departement(int id, String name) {
         this.id = id;
